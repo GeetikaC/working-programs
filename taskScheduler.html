@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Task Scheduler</title>
+</head>
+<body>
+<h2>Enter the tasks</h2>
+<form id="taskForm">
+	<label for="name">Task Name</label><br/>
+	<input type="text" id="name" /><span id="nameError"></span><br/>
+	<input type="submit" value="Add to list" />
+</form>
+<ul id="tasklist">
+	
+</ul>
+
+<script type="text/javascript">
+	var tasks = [];
+	var listHandle = document.getElementById('tasklist');
+	var nameHandle = document.getElementById('name');
+	var formHandle = document.getElementById('taskForm');
+	var nameErrorHandle = document.querySelector('#nameError');
+	var i = 0;
+
+	// TO PRINT THE LIST INITIALLY:
+	tasks.forEach(function(task){
+		appendToList(task);
+	});
+
+
+	// TO APPEND AND PRINT NEW VALUES
+	function appendToList(value){
+
+		var input = document.createElement('input');
+		input.type = 'checkbox';
+		input.id = i++;
+
+		var li = document.createElement('li');
+		var label = document.createElement('label');
+		var forInput = document.createAttribute('for');
+		forInput.value = input.id;
+		label.setAttributeNode(forInput);
+		var text = document.createTextNode(value);
+		label.appendChild(text);
+		li.appendChild(label);
+		li.appendChild(input);
+		listHandle.appendChild(li);
+
+	}
+
+	function checkIfTaskCompleted(checkbox, value){
+		if (checkbox.checked) {
+			console.log(listHandle.childNodes[++checkbox.id].innerText);
+			var oldText = listHandle.childNodes[checkbox.id];
+			var newText = document.createTextNode(value);
+			var s = document.createElement('s');
+			s.appendChild(newText);
+			var li = document.createElement('li');
+			li.appendChild(s);
+			// listHandle.removeChild(oldText);
+			// listHandle.appendChild(li);
+			listHandle.replaceChild(li,oldText);
+		}
+
+
+		//if you wish to append to the list and not remove:
+		// if (checkbox.checked) {
+		// 	var text = document.createTextNode(value);
+		// 	var s = document.createElement('s');
+		// 	s.appendChild(text);
+		// 	var li = document.createElement('li');
+		// 	li.appendChild(s);
+		// 	listHandle.appendChild(li);
+		// }
+
+	}
+
+	nameHandle.addEventListener('blur', function(){
+		console.log("Outside the text field");
+		if (nameHandle.value === "") {
+			nameErrorHandle.innerText = "cant be blank";
+		}
+		else{
+			tasks.push(nameHandle.value); //adds values to the list permanently
+			nameErrorHandle.innerText = "";
+		}
+	}, false);
+
+
+	nameHandle.addEventListener('focus', function(){
+		console.log("Inside the text field");
+		nameErrorHandle.innerText = "Please enter a task";
+	}, false);
+
+	formHandle.addEventListener('submit', function(e){
+		e.preventDefault(); //prevents submit button to perform default action on click, ie reload whole page 
+		appendToList(nameHandle.value); //displays added values, appending them to the list
+		nameHandle.value = "";
+	}, false);
+
+	listHandle.addEventListener('click', function(e){
+		console.log(e.target.checked);
+		var status = e.target;
+		var value = tasks[e.target.id];
+		checkIfTaskCompleted(status, value);
+	}, false);
+
+
+</script>
+</body>
+</html>
